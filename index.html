@@ -155,7 +155,7 @@ h1{margin:5px 0;}
 <div class="music-player">
 <div class="music-title">🎵 Background Sound</div>
 
-<audio id="bgMusic" loop>
+<audio id="bgMusic" loop muted>
     <source src="bgmusic.mp3" type="audio/mpeg">
 </audio>
 
@@ -170,15 +170,32 @@ const audio = document.getElementById('bgMusic');
 const playBtn = document.getElementById('playBtn');
 let isPlaying = true;
 
-// Attempt autoplay when user interacts (most browsers block auto-play)
-window.addEventListener('load', () => {
+// Attempt autoplay on load
+function startAudio() {
+    audio.muted = true; // allow autoplay muted first
     audio.play().then(() => {
+        audio.muted = false; // unmute after autoplay
         playBtn.textContent = "⏸️ Pause";
         playBtn.classList.add("playing");
     }).catch(() => {
+        // autoplay blocked
         playBtn.textContent = "▶️ Play";
         isPlaying = false;
     });
+}
+
+// Run on page load
+window.addEventListener('load', startAudio);
+
+// Handle user interaction if browser blocked autoplay
+document.body.addEventListener('click', () => {
+    if(!isPlaying){
+        audio.play().then(() => {
+            playBtn.textContent = "⏸️ Pause";
+            playBtn.classList.add("playing");
+            isPlaying = true;
+        }).catch(()=>{});
+    }
 });
 
 function toggleMusic(){
