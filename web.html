@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Social Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .profile-bio {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 18px 25px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .social-link:active {
+            transform: translateY(-1px);
+        }
+
+        .social-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            filter: brightness(0) invert(1);
+        }
+
+        .social-name {
+            font-size: 16px;
+            font-weight: 600;
+            flex-grow: 1;
+        }
+
+        .music-player {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .music-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .music-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .music-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .music-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .music-btn:active {
+            transform: translateY(0);
+        }
+
+        .music-btn.playing {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .profile-pic {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-name {
+                font-size: 24px;
+            }
+
+            .social-link {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <img src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-pic" id="profilePic">
+            <h1 class="profile-name" id="profileName">Muhammed Farhad</h1>
+            <p class="profile-bio">Connect with me on social media!</p>
+        </div>
+
+        <!-- Social Links -->
+        <div class="social-links">
+            <a href="https://snapchat.com/add/yourusername" class="social-link" target="_blank">
+                <img src="https://cdn.simpleicons.org/snapchat/white" alt="Snapchat" class="social-icon">
+                <span class="social-name">Snapchat</span>
+            </a>
+
+            <a href="https://tiktok.com/@yourusername" class="social-link" target="_blank">
+                <img src="https://cdn.simpleicons.org/tiktok/white" alt="TikTok" class="social-icon">
+                <span class="social-name">TikTok</span>
+            </a>
+
+            <a href="https://instagram.com/yourusername" class="social-link" target="_blank">
+                <img src="https://cdn.simpleicons.org/instagram/white" alt="Instagram" class="social-icon">
+                <span class="social-name">Instagram</span>
+            </a>
+
+            <a href="https://facebook.com/yourusername" class="social-link" target="_blank">
+                <img src="https://cdn.simpleicons.org/facebook/white" alt="Facebook" class="social-icon">
+                <span class="social-name">Facebook</span>
+            </a>
+
+            <a href="https://wa.me/9647501234567" class="social-link" target="_blank">
+                <img src="https://cdn.simpleicons.org/whatsapp/white" alt="WhatsApp" class="social-icon">
+                <span class="social-name">WhatsApp</span>
+            </a>
+
+            <a href="https://t.me/yourusername" class="social-link" target="_blank">
+                <img src="https://cdn.simpleicons.org/telegram/white" alt="Telegram" class="social-icon">
+                <span class="social-name">Telegram</span>
+            </a>
+
+            <a href="viber://chat?number=9647501234567" class="social-link" target="_blank">
+                <img src="https://cdn.simpleicons.org/viber/white" alt="Viber" class="social-icon">
+                <span class="social-name">Viber</span>
+            </a>
+        </div>
+
+        <!-- Music Player -->
+        <div class="music-player">
+            <div class="music-title">🎵 Background Music</div>
+            <audio id="bgMusic" loop>
+                <source src="your-audio-file.mp3" type="audio/mpeg">
+            </audio>
+            <div class="music-controls">
+                <button class="music-btn" id="playBtn" onclick="toggleMusic()">▶️ Play</button>
+                <button class="music-btn" id="stopBtn" onclick="stopMusic()">⏹️ Stop</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const audio = document.getElementById('bgMusic');
+        const playBtn = document.getElementById('playBtn');
+        let isPlaying = false;
+
+        // Auto-play music when page loads (with user interaction fallback)
+        window.addEventListener('load', () => {
+            audio.play().then(() => {
+                isPlaying = true;
+                playBtn.textContent = '⏸️ Pause';
+                playBtn.classList.add('playing');
+            }).catch(() => {
+                // Auto-play blocked, user needs to click play
+                console.log('Auto-play blocked. Click play to start music.');
+            });
+        });
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                playBtn.textContent = '▶️ Play';
+                playBtn.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                audio.play();
+                playBtn.textContent = '⏸️ Pause';
+                playBtn.classList.add('playing');
+                isPlaying = true;
+            }
+        }
+
+        function stopMusic() {
+            audio.pause();
+            audio.currentTime = 0;
+            playBtn.textContent = '▶️ Play';
+            playBtn.classList.remove('playing');
+            isPlaying = false;
+        }
+    </script>
+</body>
+</html>
