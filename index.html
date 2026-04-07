@@ -170,13 +170,12 @@ const audio = document.getElementById('bgMusic');
 const playBtn = document.getElementById('playBtn');
 let isPlaying = true;
 
-// Attempt to autoplay when page loads
+// Attempt autoplay when user interacts (most browsers block auto-play)
 window.addEventListener('load', () => {
     audio.play().then(() => {
         playBtn.textContent = "⏸️ Pause";
         playBtn.classList.add("playing");
     }).catch(() => {
-        // autoplay blocked
         playBtn.textContent = "▶️ Play";
         isPlaying = false;
     });
