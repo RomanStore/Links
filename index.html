@@ -58,8 +58,9 @@ h1{margin:5px 0;}
     color:white;
     background:linear-gradient(135deg,#00f7ff,#007cf0);
     display:flex;
+    flex-direction:column;
     align-items:center;
-    gap:10px;
+    gap:3px;
     transition:0.2s;
     font-weight:600;
 }
@@ -70,6 +71,11 @@ h1{margin:5px 0;}
 .link img{
     width:24px;
     height:24px;
+}
+
+.link span.username{
+    font-size:12px;
+    opacity:0.7;
 }
 
 .music-player{
@@ -116,26 +122,31 @@ h1{margin:5px 0;}
 <a href="https://snapchat.com/add/roman_store4" class="link" target="_blank">
 <img src="https://cdn.simpleicons.org/snapchat/white" alt="Snapchat">
 <span>Snapchat</span>
+<span class="username">roman_store4</span>
 </a>
 
 <a href="https://tiktok.com/@roman_store4" class="link" target="_blank">
 <img src="https://cdn.simpleicons.org/tiktok/white" alt="TikTok">
 <span>TikTok</span>
+<span class="username">roman_store4</span>
 </a>
 
 <a href="https://facebook.com/roman.mhamad.196510" class="link" target="_blank">
 <img src="https://cdn.simpleicons.org/facebook/white" alt="Facebook">
 <span>Facebook</span>
+<span class="username">roman.mhamad.196510</span>
 </a>
 
 <a href="https://wa.me/9647517039789" class="link" target="_blank">
 <img src="https://cdn.simpleicons.org/whatsapp/white" alt="WhatsApp">
 <span>WhatsApp</span>
+<span class="username">+9647517039789</span>
 </a>
 
 <a href="https://t.me/RomanMhamad" class="link" target="_blank">
 <img src="https://cdn.simpleicons.org/telegram/white" alt="Telegram">
 <span>Telegram</span>
+<span class="username">RomanMhamad</span>
 </a>
 
 </div>
@@ -148,8 +159,7 @@ h1{margin:5px 0;}
     <source src="bgmusic.mp3" type="audio/mpeg">
 </audio>
 
-<button class="music-btn" id="playBtn" onclick="toggleMusic()">▶️ Play</button>
-<button class="music-btn" onclick="stopMusic()">⏹️ Stop</button>
+<button class="music-btn" id="playBtn" onclick="toggleMusic()">⏸️ Pause</button>
 
 </div>
 
@@ -158,7 +168,19 @@ h1{margin:5px 0;}
 <script>
 const audio = document.getElementById('bgMusic');
 const playBtn = document.getElementById('playBtn');
-let isPlaying = false;
+let isPlaying = true;
+
+// Attempt to autoplay when page loads
+window.addEventListener('load', () => {
+    audio.play().then(() => {
+        playBtn.textContent = "⏸️ Pause";
+        playBtn.classList.add("playing");
+    }).catch(() => {
+        // autoplay blocked
+        playBtn.textContent = "▶️ Play";
+        isPlaying = false;
+    });
+});
 
 function toggleMusic(){
     if(isPlaying){
@@ -172,14 +194,6 @@ function toggleMusic(){
         playBtn.classList.add("playing");
         isPlaying = true;
     }
-}
-
-function stopMusic(){
-    audio.pause();
-    audio.currentTime = 0;
-    playBtn.textContent = "▶️ Play";
-    playBtn.classList.remove("playing");
-    isPlaying = false;
 }
 </script>
 
