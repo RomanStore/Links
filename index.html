@@ -155,7 +155,7 @@ h1{margin:5px 0;}
 <div class="music-player">
 <div class="music-title">🎵 Background Sound</div>
 
-<audio id="bgMusic" loop autoplay>
+<audio id="bgMusic" loop>
     <source src="bgmusic.mp3" type="audio/mpeg">
 </audio>
 
@@ -168,35 +168,20 @@ h1{margin:5px 0;}
 <script>
 const audio = document.getElementById('bgMusic');
 const playBtn = document.getElementById('playBtn');
-let isPlaying = true;
+let isPlaying = false;  // Start with false because autoplay will likely be blocked
 
-// Force music to start automatically as soon as page loads,
-// and keep the button state in sync without needing any manual click.
+// Try to autoplay, but correctly detect if it fails
 window.addEventListener('load', () => {
-    // Play audio automatically — this makes the music start right away.
     audio.play().then(() => {
-        // Success: music is playing, button shows "Pause"
+        // Autoplay worked!
+        isPlaying = true;
         playBtn.textContent = "⏸️ Pause";
         playBtn.classList.add("playing");
-        isPlaying = true;
     }).catch(() => {
-        // In the rare case autoplay is blocked, we retry once after a micro-delay
-        // to ensure the best chance of automatic playback (still no user click required).
-        setTimeout(() => {
-            audio.play().then(() => {
-                playBtn.textContent = "⏸️ Pause";
-                playBtn.classList.add("playing");
-                isPlaying = true;
-            }).catch(() => {
-                // If still blocked (very unlikely on modern browsers with autoplay attribute),
-                // we keep the button in "Pause" state and the user can click if needed,
-                // but the requirement of "start automatically" is already fulfilled
-                // in 99% of cases thanks to autoplay + play() call.
-                playBtn.textContent = "⏸️ Pause";
-                playBtn.classList.add("playing");
-                isPlaying = true;
-            });
-        }, 50);
+        // Autoplay was blocked by browser - button should show "Play", not "Pause"
+        isPlaying = false;
+        playBtn.textContent = "▶️ Play";
+        playBtn.classList.remove("playing");
     });
 });
 
