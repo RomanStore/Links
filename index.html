@@ -159,7 +159,7 @@ h1{margin:5px 0;}
     <source src="bgmusic.mp3" type="audio/mpeg">
 </audio>
 
-<button class="music-btn" id="playBtn" onclick="toggleMusic()">⏸️ Pause</button>
+<button class="music-btn" id="playBtn" onclick="toggleMusic()">▶️ Play</button>
 
 </div>
 
@@ -168,22 +168,29 @@ h1{margin:5px 0;}
 <script>
 const audio = document.getElementById('bgMusic');
 const playBtn = document.getElementById('playBtn');
-let isPlaying = false;  // Start with false because autoplay will likely be blocked
+let isPlaying = false;
+let autoplayTriggered = false;
 
-// Try to autoplay, but correctly detect if it fails
-window.addEventListener('load', () => {
-    audio.play().then(() => {
-        // Autoplay worked!
-        isPlaying = true;
-        playBtn.textContent = "⏸️ Pause";
-        playBtn.classList.add("playing");
-    }).catch(() => {
-        // Autoplay was blocked by browser - button should show "Play", not "Pause"
-        isPlaying = false;
-        playBtn.textContent = "▶️ Play";
-        playBtn.classList.remove("playing");
-    });
-});
+// This function starts the music automatically on first click anywhere
+function startMusicOnFirstClick() {
+    if (!autoplayTriggered) {
+        audio.play().then(() => {
+            isPlaying = true;
+            playBtn.textContent = "⏸️ Pause";
+            playBtn.classList.add("playing");
+            autoplayTriggered = true;
+        }).catch(() => {
+            // Fallback - keep button as play
+            playBtn.textContent = "▶️ Play";
+            playBtn.classList.remove("playing");
+        });
+        // Remove the listener after first click
+        document.removeEventListener('click', startMusicOnFirstClick);
+    }
+}
+
+// Add listener for first click anywhere on the page
+document.addEventListener('click', startMusicOnFirstClick);
 
 function toggleMusic(){
     if(isPlaying){
@@ -196,6 +203,8 @@ function toggleMusic(){
         playBtn.textContent = "⏸️ Pause";
         playBtn.classList.add("playing");
         isPlaying = true;
+        // Mark as triggered so the global click doesn't interfere
+        autoplayTriggered = true;
     }
 }
 </script>
