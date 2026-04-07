@@ -82,15 +82,18 @@ h1{margin:5px 0;}
     background:#1f2937;
     border-radius:15px;
     padding:15px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
 }
 
 .music-title{
     font-size:14px;
-    margin-bottom:10px;
     font-weight:600;
 }
 
-.music-btn{
+.music-btn, .volume-btn{
     background:linear-gradient(135deg,#00f7ff,#007cf0);
     color:#000;
     border:none;
@@ -98,11 +101,17 @@ h1{margin:5px 0;}
     border-radius:20px;
     cursor:pointer;
     font-weight:600;
-    margin:5px;
+    margin:3px;
+    min-width:70px;
 }
 
 .music-btn.playing{
     background:linear-gradient(135deg,#f093fb,#f5576c);
+}
+.volume-controls{
+    display:flex;
+    gap:10px;
+    margin-top:5px;
 }
 </style>
 </head>
@@ -161,6 +170,11 @@ h1{margin:5px 0;}
 
 <button class="music-btn" id="playBtn" onclick="toggleMusic()">▶️ Play</button>
 
+<div class="volume-controls">
+    <button class="volume-btn" onclick="changeVolume(-0.1)">🔉 -</button>
+    <button class="volume-btn" onclick="changeVolume(0.1)">🔊 +</button>
+</div>
+
 </div>
 
 </div>
@@ -171,7 +185,7 @@ const playBtn = document.getElementById('playBtn');
 let isPlaying = false;
 let autoplayTriggered = false;
 
-// This function starts the music automatically on first click anywhere
+// Attempt to autoplay on first user click (required by modern browsers)
 function startMusicOnFirstClick() {
     if (!autoplayTriggered) {
         audio.play().then(() => {
@@ -180,16 +194,12 @@ function startMusicOnFirstClick() {
             playBtn.classList.add("playing");
             autoplayTriggered = true;
         }).catch(() => {
-            // Fallback - keep button as play
             playBtn.textContent = "▶️ Play";
             playBtn.classList.remove("playing");
         });
-        // Remove the listener after first click
         document.removeEventListener('click', startMusicOnFirstClick);
     }
 }
-
-// Add listener for first click anywhere on the page
 document.addEventListener('click', startMusicOnFirstClick);
 
 function toggleMusic(){
@@ -203,9 +213,16 @@ function toggleMusic(){
         playBtn.textContent = "⏸️ Pause";
         playBtn.classList.add("playing");
         isPlaying = true;
-        // Mark as triggered so the global click doesn't interfere
         autoplayTriggered = true;
     }
+}
+
+// Volume control: value between 0 and 1
+function changeVolume(amount){
+    let newVolume = audio.volume + amount;
+    if(newVolume > 1) newVolume = 1;
+    if(newVolume < 0) newVolume = 0;
+    audio.volume = newVolume;
 }
 </script>
 
