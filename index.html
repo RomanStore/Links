@@ -61,12 +61,7 @@ h1{margin:5px 0;}
     flex-direction:column;
     align-items:center;
     gap:3px;
-    transition:0.2s;
-    font-weight:600;
 }
-
-.link:hover{transform:translateY(-2px);}
-.link:active{transform:scale(0.97);}
 
 .link img{
     width:24px;
@@ -78,6 +73,7 @@ h1{margin:5px 0;}
     opacity:0.7;
 }
 
+/* MUSIC */
 .music-player{
     background:#1f2937;
     border-radius:15px;
@@ -88,12 +84,7 @@ h1{margin:5px 0;}
     gap:10px;
 }
 
-.music-title{
-    font-size:14px;
-    font-weight:600;
-}
-
-.music-btn, .volume-btn{
+.music-btn{
     background:linear-gradient(135deg,#00f7ff,#007cf0);
     color:#000;
     border:none;
@@ -101,17 +92,37 @@ h1{margin:5px 0;}
     border-radius:20px;
     cursor:pointer;
     font-weight:600;
-    margin:3px;
-    min-width:70px;
 }
 
-.music-btn.playing{
-    background:linear-gradient(135deg,#f093fb,#f5576c);
+/* 🔥 NEW VOLUME SLIDER */
+.volume-slider{
+    width:100%;
+    margin-top:10px;
+    -webkit-appearance:none;
+    appearance:none;
+    height:6px;
+    border-radius:10px;
+    background:#374151;
+    outline:none;
 }
-.volume-controls{
-    display:flex;
-    gap:10px;
-    margin-top:5px;
+
+/* slider thumb */
+.volume-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:#00f7ff;
+    cursor:pointer;
+    box-shadow:0 0 10px #00f7ff;
+}
+
+.volume-slider::-moz-range-thumb{
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:#00f7ff;
+    cursor:pointer;
 }
 </style>
 </head>
@@ -120,110 +131,99 @@ h1{margin:5px 0;}
 
 <div class="container">
 
-<!-- Profile Picture -->
-<img src="bgimage.jpg" id="profilePic" class="profile">
+<img src="bgimage.jpg" class="profile">
 
-<h1 id="profileName">Roman Store</h1>
+<h1>Roman Store</h1>
 <p class="bio">🎮 Gaming Store |📍 Kurdistan</p>
 
 <div class="links">
 
-<a href="https://snapchat.com/add/roman_store4" class="link" target="_blank">
-<img src="https://cdn.simpleicons.org/snapchat/white" alt="Snapchat">
+<a href="https://snapchat.com/add/roman_store4" class="link">
+<img src="https://cdn.simpleicons.org/snapchat/white">
 <span>Snapchat</span>
 <span class="username">roman_store4</span>
 </a>
 
-<a href="https://tiktok.com/@roman_store4" class="link" target="_blank">
-<img src="https://cdn.simpleicons.org/tiktok/white" alt="TikTok">
+<a href="https://tiktok.com/@roman_store4" class="link">
+<img src="https://cdn.simpleicons.org/tiktok/white">
 <span>TikTok</span>
 <span class="username">roman_store4</span>
 </a>
 
-<a href="https://facebook.com/roman.mhamad.196510" class="link" target="_blank">
-<img src="https://cdn.simpleicons.org/facebook/white" alt="Facebook">
+<a href="https://facebook.com/roman.mhamad.196510" class="link">
+<img src="https://cdn.simpleicons.org/facebook/white">
 <span>Facebook</span>
 <span class="username">roman.mhamad.196510</span>
 </a>
 
-<a href="https://wa.me/9647517039789" class="link" target="_blank">
-<img src="https://cdn.simpleicons.org/whatsapp/white" alt="WhatsApp">
+<a href="https://wa.me/9647517039789" class="link">
+<img src="https://cdn.simpleicons.org/whatsapp/white">
 <span>WhatsApp</span>
 <span class="username">+9647517039789</span>
 </a>
 
-<a href="https://t.me/RomanMhamad" class="link" target="_blank">
-<img src="https://cdn.simpleicons.org/telegram/white" alt="Telegram">
+<a href="https://t.me/RomanMhamad" class="link">
+<img src="https://cdn.simpleicons.org/telegram/white">
 <span>Telegram</span>
 <span class="username">RomanMhamad</span>
 </a>
 
 </div>
 
-<!-- Music Player -->
+<!-- MUSIC -->
 <div class="music-player">
-<div class="music-title">🎵 Background Sound</div>
 
 <audio id="bgMusic" loop>
-    <source src="bgmusic.mp3" type="audio/mpeg">
+<source src="bgmusic.mp3">
 </audio>
 
 <button class="music-btn" id="playBtn" onclick="toggleMusic()">▶️ Play</button>
 
-<div class="volume-controls">
-    <button class="volume-btn" onclick="changeVolume(-0.1)">🔉 -</button>
-    <button class="volume-btn" onclick="changeVolume(0.1)">🔊 +</button>
-</div>
+<!-- 🔥 NEW SLIDER -->
+<input type="range" min="0" max="1" step="0.01"
+       class="volume-slider"
+       id="volumeSlider">
 
 </div>
 
 </div>
 
 <script>
-const audio = document.getElementById('bgMusic');
-const playBtn = document.getElementById('playBtn');
-let isPlaying = false;
-let autoplayTriggered = false;
+const audio = document.getElementById("bgMusic");
+const btn = document.getElementById("playBtn");
+const slider = document.getElementById("volumeSlider");
 
-// Attempt to autoplay on first user click (required by modern browsers)
-function startMusicOnFirstClick() {
-    if (!autoplayTriggered) {
-        audio.play().then(() => {
-            isPlaying = true;
-            playBtn.textContent = "⏸️ Pause";
-            playBtn.classList.add("playing");
-            autoplayTriggered = true;
-        }).catch(() => {
-            playBtn.textContent = "▶️ Play";
-            playBtn.classList.remove("playing");
-        });
-        document.removeEventListener('click', startMusicOnFirstClick);
+let playing = false;
+
+/* default volume */
+audio.volume = 0.5;
+slider.value = 0.5;
+
+/* autoplay best-effort */
+document.addEventListener("click", () => {
+    if (!playing) {
+        audio.play();
+        playing = true;
+        btn.textContent = "⏸️ Pause";
     }
-}
-document.addEventListener('click', startMusicOnFirstClick);
+}, { once:true });
 
 function toggleMusic(){
-    if(isPlaying){
+    if(playing){
         audio.pause();
-        playBtn.textContent = "▶️ Play";
-        playBtn.classList.remove("playing");
-        isPlaying = false;
-    } else {
+        btn.textContent = "▶️ Play";
+        playing = false;
+    }else{
         audio.play();
-        playBtn.textContent = "⏸️ Pause";
-        playBtn.classList.add("playing");
-        isPlaying = true;
-        autoplayTriggered = true;
+        btn.textContent = "⏸️ Pause";
+        playing = true;
     }
 }
 
-// Volume control: value between 0 and 1
-function changeVolume(amount){
-    let newVolume = audio.volume + amount;
-    if(newVolume > 1) newVolume = 1;
-    if(newVolume < 0) newVolume = 0;
-    audio.volume = newVolume;
-}
+/* 🔥 REAL VOLUME CONTROL (mobile + PC) */
+slider.addEventListener("input", (e) => {
+    audio.volume = e.target.value;
+});
 </script>
 
 </body>
