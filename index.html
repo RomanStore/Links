@@ -19,6 +19,31 @@ body{
     min-height:100vh;
 }
 
+/* BLUR INTRO SCREEN */
+#intro{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    backdrop-filter:blur(12px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:999;
+}
+
+#intro button{
+    padding:18px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(135deg,#00f7ff,#007cf0);
+    color:#000;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* MAIN */
 .container{
     background:#111827;
     padding:25px;
@@ -27,6 +52,14 @@ body{
     max-width:420px;
     text-align:center;
     box-shadow:0 0 40px rgba(0,255,255,0.2);
+    opacity:0;
+    transform:scale(0.95);
+    transition:0.5s;
+}
+
+.container.show{
+    opacity:1;
+    transform:scale(1);
 }
 
 .profile{
@@ -38,6 +71,13 @@ body{
 }
 
 h1{margin:5px 0;}
+
+/* VISITOR COUNTER */
+.visits{
+    margin:10px 0;
+    font-size:14px;
+    opacity:0.8;
+}
 
 /* typing bio */
 .bio{
@@ -59,9 +99,8 @@ h1{margin:5px 0;}
     margin-bottom:15px;
 }
 
-/* 🔥 SMALLER BUTTONS */
 .link{
-    padding:10px 12px;   /* smaller */
+    padding:10px 12px;
     border-radius:12px;
     text-decoration:none;
     color:white;
@@ -107,7 +146,6 @@ h1{margin:5px 0;}
     margin-top:8px;
 }
 
-/* hover */
 .link:hover{
     transform:scale(1.02);
 }
@@ -116,11 +154,18 @@ h1{margin:5px 0;}
 
 <body>
 
-<div class="container">
+<!-- INTRO SCREEN -->
+<div id="intro">
+    <button onclick="startSite()">CLICK ANYWHERE</button>
+</div>
+
+<div class="container" id="main">
 
 <img src="bgimage.jpg" class="profile">
 
 <h1>Roman Store</h1>
+
+<div class="visits">👁️ Visitors: <span id="visitCount">0</span></div>
 
 <p class="bio" id="bioText"></p>
 
@@ -158,7 +203,6 @@ h1{margin:5px 0;}
 
 </div>
 
-<!-- MUSIC -->
 <div class="music-player">
 
 <audio id="bgMusic" loop>
@@ -176,10 +220,38 @@ h1{margin:5px 0;}
 <script>
 const audio=document.getElementById("bgMusic");
 const volume=document.getElementById("volume");
+const main=document.getElementById("main");
+const intro=document.getElementById("intro");
 
 audio.volume=0.5;
 volume.value=0.5;
 
+function startSite(){
+    intro.style.display="none";
+    main.classList.add("show");
+
+    // start music immediately
+    audio.play();
+
+    loadVisits();
+}
+
+/* VISITOR COUNTER (simple global API) */
+function loadVisits(){
+    fetch("https://api.countapi.xyz/hit/roman-store/main")
+    .then(res=>res.json())
+    .then(data=>{
+        document.getElementById("visitCount").textContent=data.value;
+    })
+    .catch(()=>{
+        let local=localStorage.getItem("visits")||0;
+        local++;
+        localStorage.setItem("visits",local);
+        document.getElementById("visitCount").textContent=local;
+    });
+}
+
+/* MUSIC */
 function toggleMusic(){
     if(audio.paused){
         audio.play();
