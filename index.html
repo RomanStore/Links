@@ -17,39 +17,37 @@ body{
     justify-content:center;
     align-items:center;
     min-height:100vh;
+    overflow:hidden;
 }
 
-/* BLUR OVERLAY */
-#overlay{
+/* ENTRY SCREEN */
+#entry{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.25);
-    backdrop-filter:blur(18px);
+    background:rgba(0,0,0,0.55);
+    backdrop-filter: blur(12px);
     display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:column;
     z-index:999;
-    cursor:pointer;
     text-align:center;
 }
 
-#overlay h1{
+#entry h1{
     font-size:22px;
-    margin:0;
+    margin-bottom:10px;
 }
 
-#overlay p{
-    font-size:14px;
+#entry p{
     opacity:0.8;
-    margin-top:10px;
 }
 
 /* MAIN */
 .container{
     background:#111827;
-    padding:25px;
-    border-radius:20px;
+    padding:20px;
+    border-radius:18px;
     width:100%;
     max-width:420px;
     text-align:center;
@@ -66,20 +64,19 @@ body{
 
 h1{margin:5px 0;}
 
-.visits{
-    margin:10px 0;
-    font-size:14px;
-    opacity:0.8;
-}
-
 .bio{
     font-size:14px;
     opacity:0.8;
-    margin-bottom:18px;
-    border-right:2px solid #00f7ff;
-    white-space:nowrap;
-    overflow:hidden;
-    display:inline-block;
+    margin-bottom:12px;
+}
+
+.visits{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    font-size:13px;
+    opacity:0.8;
+    margin-bottom:10px;
 }
 
 .links{
@@ -97,47 +94,71 @@ h1{margin:5px 0;}
     display:flex;
     flex-direction:column;
     align-items:center;
+    gap:2px;
     font-weight:600;
+    transition:0.2s;
 }
 
-.link img{width:22px;height:22px;}
-.link span.username{font-size:11px;opacity:0.7;}
+.link:hover{
+    transform:scale(1.02);
+}
 
+.link img{
+    width:22px;
+    height:22px;
+}
+
+.link span.username{
+    font-size:11px;
+    opacity:0.7;
+}
+
+/* MUSIC */
 .music-player{
+    margin-top:10px;
     background:#1f2937;
-    border-radius:15px;
-    padding:12px;
-    margin-top:12px;
+    border-radius:14px;
+    padding:10px;
 }
 
 .music-btn{
     background:linear-gradient(135deg,#00f7ff,#007cf0);
     color:#000;
     border:none;
-    padding:8px 16px;
-    border-radius:18px;
+    padding:8px 14px;
+    border-radius:16px;
     cursor:pointer;
+    font-weight:600;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.volume-slider{
+    width:100%;
 }
 </style>
 </head>
 
 <body>
 
-<!-- OVERLAY -->
-<div id="overlay">
-    <h1>CLICK ANYWHERE</h1>
-    <p>Enter Roman Store</p>
+<!-- ENTRY SCREEN -->
+<div id="entry">
+    <h1>CLICK ANYWHERE TO ENTER</h1>
+    <p>Start experience + music</p>
 </div>
 
+<!-- MAIN -->
 <div class="container">
 
 <img src="bgimage.jpg" class="profile">
 
 <h1>Roman Store</h1>
 
-<div class="visits">👁️ Visitors: <span id="visitCount">0</span></div>
+<div class="visits">
+👁️ <span id="visitCount">0</span> visits
+</div>
 
-<p class="bio" id="bioText"></p>
+<p class="bio">ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE</p>
 
 <div class="links">
 
@@ -173,84 +194,86 @@ h1{margin:5px 0;}
 
 </div>
 
+<!-- MUSIC -->
 <div class="music-player">
 
 <audio id="bgMusic" loop>
-<source src="bgmusic.mp3">
+<source src="bgmusic.mp3" type="audio/mpeg">
 </audio>
 
 <button class="music-btn" onclick="toggleMusic()">▶️ Play / Pause</button>
+
+<input type="range" min="0" max="1" step="0.01" class="volume-slider" id="volume">
 
 </div>
 
 </div>
 
 <script>
-
-const overlay = document.getElementById("overlay");
+const entry = document.getElementById("entry");
 const audio = document.getElementById("bgMusic");
+const volume = document.getElementById("volume");
+const visitEl = document.getElementById("visitCount");
 
-/* CLICK ANYWHERE START */
-overlay.addEventListener("click", () => {
+let started = false;
 
-    overlay.style.display = "none";
+/* ======================
+   VISITOR COUNTER (GLOBAL)
+====================== */
+const KEY = "roman_store_visit_v1";
 
-    audio.play();
-
-    loadVisits();
-
-});
-
-/* VISITOR FIXED */
-function loadVisits(){
-
-    if(localStorage.getItem("visitedCounted")){
-        fetch("https://api.countapi.xyz/get/roman-store/main")
-        .then(res=>res.json())
-        .then(data=>{
-            document.getElementById("visitCount").textContent = data.value;
-        });
-        return;
-    }
-
-    fetch("https://api.countapi.xyz/hit/roman-store/main")
+// prevent same device spam
+if(!localStorage.getItem(KEY)){
+    fetch("https://api.countapi.xyz/hit/romanstore/main")
     .then(res=>res.json())
     .then(data=>{
-        document.getElementById("visitCount").textContent = data.value;
-        localStorage.setItem("visitedCounted","true");
-    })
-    .catch(()=>{
-        let local = localStorage.getItem("fallback") || 0;
-        local++;
-        localStorage.setItem("fallback",local);
-        document.getElementById("visitCount").textContent = local;
+        visitEl.textContent = data.value;
+        localStorage.setItem(KEY,"1");
+    });
+}else{
+    fetch("https://api.countapi.xyz/get/romanstore/main")
+    .then(res=>res.json())
+    .then(data=>{
+        visitEl.textContent = data.value;
     });
 }
 
-/* MUSIC */
+/* ======================
+   ENTRY CLICK ANYWHERE
+====================== */
+function startSite(){
+    if(started) return;
+    started = true;
+
+    entry.style.display = "none";
+
+    audio.volume = 0.5;
+    volume.value = 0.5;
+
+    audio.play().catch(()=>{});
+
+    document.removeEventListener("click", startSite);
+}
+
+document.addEventListener("click", startSite);
+
+/* ======================
+   MUSIC CONTROL
+====================== */
 function toggleMusic(){
-    if(audio.paused) audio.play();
-    else audio.pause();
+    if(audio.paused){
+        audio.play();
+    }else{
+        audio.pause();
+    }
 }
 
-/* TYPE EFFECT */
-const text="ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE";
-const bio=document.getElementById("bioText");
-
-let i=0,del=false;
-
-function type(){
-if(!del){
-bio.textContent=text.substring(0,i++);
-if(i>text.length){del=true;setTimeout(type,1000);return;}
-}else{
-bio.textContent=text.substring(0,i--);
-if(i<0){del=false;setTimeout(type,300);return;}
-}
-setTimeout(type,del?40:60);
-}
-type();
-
+/* ======================
+   VOLUME SLIDER
+====================== */
+volume.addEventListener("input",()=>{
+    audio.volume = volume.value;
+});
 </script>
 
 </body>
