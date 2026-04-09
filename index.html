@@ -17,33 +17,8 @@ body{
     justify-content:center;
     align-items:center;
     min-height:100vh;
-    overflow:hidden;
 }
 
-/* ENTRY SCREEN */
-#entry{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.55);
-    backdrop-filter: blur(12px);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    z-index:999;
-    text-align:center;
-}
-
-#entry h1{
-    font-size:22px;
-    margin-bottom:10px;
-}
-
-#entry p{
-    opacity:0.8;
-}
-
-/* MAIN */
 .container{
     background:#111827;
     padding:20px;
@@ -67,16 +42,13 @@ h1{margin:5px 0;}
 .bio{
     font-size:14px;
     opacity:0.8;
-    margin-bottom:12px;
+    margin-bottom:10px;
 }
 
 .visits{
-    display:flex;
-    justify-content:center;
-    gap:6px;
     font-size:13px;
     opacity:0.8;
-    margin-bottom:10px;
+    margin-bottom:12px;
 }
 
 .links{
@@ -113,7 +85,6 @@ h1{margin:5px 0;}
     opacity:0.7;
 }
 
-/* MUSIC */
 .music-player{
     margin-top:10px;
     background:#1f2937;
@@ -141,19 +112,13 @@ h1{margin:5px 0;}
 
 <body>
 
-<!-- ENTRY SCREEN -->
-<div id="entry">
-    <h1>CLICK ANYWHERE TO ENTER</h1>
-    <p>Start experience + music</p>
-</div>
-
-<!-- MAIN -->
 <div class="container">
 
 <img src="bgimage.jpg" class="profile">
 
 <h1>Roman Store</h1>
 
+<!-- VISITS -->
 <div class="visits">
 👁️ <span id="visitCount">0</span> visits
 </div>
@@ -210,67 +175,37 @@ h1{margin:5px 0;}
 </div>
 
 <script>
-const entry = document.getElementById("entry");
+/* =========================
+   VISITOR COUNTER (LOCAL)
+========================= */
+let count = localStorage.getItem("roman_visits");
+
+if(!count){
+    count = 1;
+} else {
+    count = parseInt(count) + 1;
+}
+
+localStorage.setItem("roman_visits", count);
+document.getElementById("visitCount").textContent = count;
+
+/* =========================
+   MUSIC SYSTEM
+========================= */
 const audio = document.getElementById("bgMusic");
 const volume = document.getElementById("volume");
-const visitEl = document.getElementById("visitCount");
 
-let started = false;
+audio.volume = 0.5;
+volume.value = 0.5;
 
-/* ======================
-   VISITOR COUNTER (GLOBAL)
-====================== */
-const KEY = "roman_store_visit_v1";
-
-// prevent same device spam
-if(!localStorage.getItem(KEY)){
-    fetch("https://api.countapi.xyz/hit/romanstore/main")
-    .then(res=>res.json())
-    .then(data=>{
-        visitEl.textContent = data.value;
-        localStorage.setItem(KEY,"1");
-    });
-}else{
-    fetch("https://api.countapi.xyz/get/romanstore/main")
-    .then(res=>res.json())
-    .then(data=>{
-        visitEl.textContent = data.value;
-    });
-}
-
-/* ======================
-   ENTRY CLICK ANYWHERE
-====================== */
-function startSite(){
-    if(started) return;
-    started = true;
-
-    entry.style.display = "none";
-
-    audio.volume = 0.5;
-    volume.value = 0.5;
-
-    audio.play().catch(()=>{});
-
-    document.removeEventListener("click", startSite);
-}
-
-document.addEventListener("click", startSite);
-
-/* ======================
-   MUSIC CONTROL
-====================== */
 function toggleMusic(){
     if(audio.paused){
         audio.play();
-    }else{
+    } else {
         audio.pause();
     }
 }
 
-/* ======================
-   VOLUME SLIDER
-====================== */
 volume.addEventListener("input",()=>{
     audio.volume = volume.value;
 });
