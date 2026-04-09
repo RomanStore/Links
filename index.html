@@ -19,28 +19,19 @@ body{
     min-height:100vh;
 }
 
-/* BLUR INTRO SCREEN */
+/* INTRO */
 #intro{
     position:fixed;
     inset:0;
     background:rgba(0,0,0,0.6);
-    backdrop-filter:blur(12px);
+    backdrop-filter:blur(14px);
     display:flex;
     justify-content:center;
     align-items:center;
-    flex-direction:column;
-    z-index:999;
-}
-
-#intro button{
-    padding:18px 30px;
-    font-size:18px;
-    border:none;
-    border-radius:12px;
-    background:linear-gradient(135deg,#00f7ff,#007cf0);
-    color:#000;
+    font-size:22px;
     font-weight:bold;
     cursor:pointer;
+    z-index:999;
 }
 
 /* MAIN */
@@ -72,31 +63,26 @@ body{
 
 h1{margin:5px 0;}
 
-/* VISITOR COUNTER */
 .visits{
     margin:10px 0;
     font-size:14px;
     opacity:0.8;
 }
 
-/* typing bio */
 .bio{
     font-size:14px;
     opacity:0.8;
     margin-bottom:18px;
-    min-height:20px;
     border-right:2px solid #00f7ff;
     white-space:nowrap;
     overflow:hidden;
     display:inline-block;
 }
 
-/* LINKS */
 .links{
     display:flex;
     flex-direction:column;
     gap:8px;
-    margin-bottom:15px;
 }
 
 .link{
@@ -108,26 +94,17 @@ h1{margin:5px 0;}
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:2px;
-    transition:0.2s;
     font-weight:600;
 }
 
-.link img{
-    width:22px;
-    height:22px;
-}
+.link img{width:22px;height:22px;}
+.link span.username{font-size:11px;opacity:0.7;}
 
-.link span.username{
-    font-size:11px;
-    opacity:0.7;
-}
-
-/* MUSIC */
 .music-player{
     background:#1f2937;
     border-radius:15px;
     padding:12px;
+    margin-top:12px;
 }
 
 .music-btn{
@@ -138,26 +115,19 @@ h1{margin:5px 0;}
     border-radius:18px;
     cursor:pointer;
     font-weight:600;
-    font-size:13px;
 }
 
 .volume-slider{
     width:100%;
     margin-top:8px;
 }
-
-.link:hover{
-    transform:scale(1.02);
-}
 </style>
 </head>
 
 <body>
 
-<!-- INTRO SCREEN -->
-<div id="intro">
-    <button onclick="startSite()">CLICK ANYWHERE</button>
-</div>
+<!-- CLICK ANYWHERE SCREEN -->
+<div id="intro">CLICK ANYWHERE</div>
 
 <div class="container" id="main">
 
@@ -171,31 +141,31 @@ h1{margin:5px 0;}
 
 <div class="links">
 
-<a href="https://snapchat.com/add/roman_store4" class="link">
+<a href="#" class="link">
 <img src="https://cdn.simpleicons.org/snapchat/white">
 <span>Snapchat</span>
 <span class="username">roman_store4</span>
 </a>
 
-<a href="https://tiktok.com/@roman_store4" class="link">
+<a href="#" class="link">
 <img src="https://cdn.simpleicons.org/tiktok/white">
 <span>TikTok</span>
 <span class="username">roman_store4</span>
 </a>
 
-<a href="https://facebook.com/roman.mhamad.196510" class="link">
+<a href="#" class="link">
 <img src="https://cdn.simpleicons.org/facebook/white">
 <span>Facebook</span>
 <span class="username">roman.mhamad.196510</span>
 </a>
 
-<a href="https://wa.me/9647517039789" class="link">
+<a href="#" class="link">
 <img src="https://cdn.simpleicons.org/whatsapp/white">
 <span>WhatsApp</span>
 <span class="username">+9647517039789</span>
 </a>
 
-<a href="https://t.me/RomanMhamad" class="link">
+<a href="#" class="link">
 <img src="https://cdn.simpleicons.org/telegram/white">
 <span>Telegram</span>
 <span class="username">RomanMhamad</span>
@@ -218,53 +188,71 @@ h1{margin:5px 0;}
 </div>
 
 <script>
+
+const intro=document.getElementById("intro");
+const main=document.getElementById("main");
 const audio=document.getElementById("bgMusic");
 const volume=document.getElementById("volume");
-const main=document.getElementById("main");
-const intro=document.getElementById("intro");
 
+/* VOLUME */
 audio.volume=0.5;
 volume.value=0.5;
 
+/* INTRO CLICK ANYWHERE */
+intro.addEventListener("click",startSite);
+
 function startSite(){
+
     intro.style.display="none";
     main.classList.add("show");
 
-    // start music immediately
     audio.play();
 
     loadVisits();
+
+    // save device so refresh won't count again
+    if(!localStorage.getItem("visited")){
+        localStorage.setItem("visited","yes");
+    }
 }
 
-/* VISITOR COUNTER (simple global API) */
+/* VISITOR COUNTER (FIXED - ONCE PER DEVICE) */
 function loadVisits(){
+
+    if(localStorage.getItem("visitedCounted")){
+        // already counted this device
+        document.getElementById("visitCount").textContent =
+        localStorage.getItem("globalCount") || 1;
+        return;
+    }
+
     fetch("https://api.countapi.xyz/hit/roman-store/main")
     .then(res=>res.json())
     .then(data=>{
         document.getElementById("visitCount").textContent=data.value;
+        localStorage.setItem("globalCount",data.value);
+        localStorage.setItem("visitedCounted","true");
     })
     .catch(()=>{
-        let local=localStorage.getItem("visits")||0;
+        let local = localStorage.getItem("fallbackCount") || 0;
         local++;
-        localStorage.setItem("visits",local);
+        localStorage.setItem("fallbackCount",local);
         document.getElementById("visitCount").textContent=local;
     });
 }
 
 /* MUSIC */
 function toggleMusic(){
-    if(audio.paused){
-        audio.play();
-    }else{
-        audio.pause();
-    }
+    if(audio.paused) audio.play();
+    else audio.pause();
 }
 
+/* VOLUME SLIDER */
 volume.addEventListener("input",()=>{
     audio.volume=volume.value;
 });
 
-/* typing effect */
+/* TYPE TEXT */
 const text="ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE";
 const bio=document.getElementById("bioText");
 
@@ -280,8 +268,8 @@ if(i<0){del=false;setTimeout(type,300);return;}
 }
 setTimeout(type,del?40:60);
 }
-
 type();
+
 </script>
 
 </body>
