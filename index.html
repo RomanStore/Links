@@ -19,19 +19,30 @@ body{
     min-height:100vh;
 }
 
-/* INTRO */
-#intro{
+/* BLUR OVERLAY */
+#overlay{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.6);
-    backdrop-filter:blur(14px);
+    background:rgba(0,0,0,0.25);
+    backdrop-filter:blur(18px);
     display:flex;
     justify-content:center;
     align-items:center;
-    font-size:22px;
-    font-weight:bold;
-    cursor:pointer;
+    flex-direction:column;
     z-index:999;
+    cursor:pointer;
+    text-align:center;
+}
+
+#overlay h1{
+    font-size:22px;
+    margin:0;
+}
+
+#overlay p{
+    font-size:14px;
+    opacity:0.8;
+    margin-top:10px;
 }
 
 /* MAIN */
@@ -43,14 +54,6 @@ body{
     max-width:420px;
     text-align:center;
     box-shadow:0 0 40px rgba(0,255,255,0.2);
-    opacity:0;
-    transform:scale(0.95);
-    transition:0.5s;
-}
-
-.container.show{
-    opacity:1;
-    transform:scale(1);
 }
 
 .profile{
@@ -114,22 +117,19 @@ h1{margin:5px 0;}
     padding:8px 16px;
     border-radius:18px;
     cursor:pointer;
-    font-weight:600;
-}
-
-.volume-slider{
-    width:100%;
-    margin-top:8px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- CLICK ANYWHERE SCREEN -->
-<div id="intro">CLICK ANYWHERE</div>
+<!-- OVERLAY -->
+<div id="overlay">
+    <h1>CLICK ANYWHERE</h1>
+    <p>Enter Roman Store</p>
+</div>
 
-<div class="container" id="main">
+<div class="container">
 
 <img src="bgimage.jpg" class="profile">
 
@@ -181,63 +181,49 @@ h1{margin:5px 0;}
 
 <button class="music-btn" onclick="toggleMusic()">▶️ Play / Pause</button>
 
-<input type="range" min="0" max="1" step="0.01" class="volume-slider" id="volume">
-
 </div>
 
 </div>
 
 <script>
 
-const intro=document.getElementById("intro");
-const main=document.getElementById("main");
-const audio=document.getElementById("bgMusic");
-const volume=document.getElementById("volume");
+const overlay = document.getElementById("overlay");
+const audio = document.getElementById("bgMusic");
 
-/* VOLUME */
-audio.volume=0.5;
-volume.value=0.5;
+/* CLICK ANYWHERE START */
+overlay.addEventListener("click", () => {
 
-/* INTRO CLICK ANYWHERE */
-intro.addEventListener("click",startSite);
-
-function startSite(){
-
-    intro.style.display="none";
-    main.classList.add("show");
+    overlay.style.display = "none";
 
     audio.play();
 
     loadVisits();
 
-    // save device so refresh won't count again
-    if(!localStorage.getItem("visited")){
-        localStorage.setItem("visited","yes");
-    }
-}
+});
 
-/* VISITOR COUNTER (FIXED - ONCE PER DEVICE) */
+/* VISITOR FIXED */
 function loadVisits(){
 
     if(localStorage.getItem("visitedCounted")){
-        // already counted this device
-        document.getElementById("visitCount").textContent =
-        localStorage.getItem("globalCount") || 1;
+        fetch("https://api.countapi.xyz/get/roman-store/main")
+        .then(res=>res.json())
+        .then(data=>{
+            document.getElementById("visitCount").textContent = data.value;
+        });
         return;
     }
 
     fetch("https://api.countapi.xyz/hit/roman-store/main")
     .then(res=>res.json())
     .then(data=>{
-        document.getElementById("visitCount").textContent=data.value;
-        localStorage.setItem("globalCount",data.value);
+        document.getElementById("visitCount").textContent = data.value;
         localStorage.setItem("visitedCounted","true");
     })
     .catch(()=>{
-        let local = localStorage.getItem("fallbackCount") || 0;
+        let local = localStorage.getItem("fallback") || 0;
         local++;
-        localStorage.setItem("fallbackCount",local);
-        document.getElementById("visitCount").textContent=local;
+        localStorage.setItem("fallback",local);
+        document.getElementById("visitCount").textContent = local;
     });
 }
 
@@ -247,12 +233,7 @@ function toggleMusic(){
     else audio.pause();
 }
 
-/* VOLUME SLIDER */
-volume.addEventListener("input",()=>{
-    audio.volume=volume.value;
-});
-
-/* TYPE TEXT */
+/* TYPE EFFECT */
 const text="ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE";
 const bio=document.getElementById("bioText");
 
