@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Roman Store | Links</title>
 
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/847/847969.png">
+
 <style>
 body{
     margin:0;
@@ -17,22 +19,25 @@ body{
     min-height:100vh;
 }
 
-/* START SCREEN */
-#start{
+/* OVERLAY */
+.overlay{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
+    background:rgba(0,0,0,0.65);
+    backdrop-filter:blur(12px);
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
     z-index:999;
     cursor:pointer;
-    font-size:22px;
     text-align:center;
 }
 
-/* MAIN */
+.overlay h1{
+    color:#00f7ff;
+}
+
+/* CONTAINER */
 .container{
     background:#111827;
     padding:20px;
@@ -43,6 +48,7 @@ body{
     box-shadow:0 0 40px rgba(0,255,255,0.2);
 }
 
+/* PROFILE */
 .profile{
     width:110px;
     height:110px;
@@ -50,48 +56,71 @@ body{
     border:3px solid #00f7ff;
 }
 
-h1{margin:5px 0;}
-
-.bio{
-    font-size:14px;
-    opacity:0.8;
-}
-
+/* VISITS */
 .visits{
-    font-size:13px;
     margin:10px 0;
-    opacity:0.8;
+    font-size:13px;
+    opacity:0.85;
 }
 
-.links a{
+/* LINKS */
+.links{
     display:flex;
     flex-direction:column;
-    background:linear-gradient(135deg,#00f7ff,#007cf0);
-    margin:6px 0;
-    padding:10px;
+    gap:8px;
+}
+
+.link{
+    padding:10px 12px;
     border-radius:12px;
     text-decoration:none;
     color:white;
-    border:2px solid transparent;
+    background:linear-gradient(135deg,#00f7ff,#007cf0);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    font-weight:600;
     transition:0.2s;
+    border:2px solid transparent;
 }
 
-.links a:hover{
-    border:2px solid #00e5ff;
+.link:hover{
+    border:2px solid #38bdf8;
     transform:scale(1.02);
 }
 
-.username{
+.link img{
+    width:22px;
+    height:22px;
+}
+
+.link span.username{
     font-size:11px;
     opacity:0.7;
 }
 
 /* MUSIC */
-.music{
+.music-player{
     margin-top:10px;
+    background:#1f2937;
+    border-radius:14px;
+    padding:10px;
 }
 
-input[type=range]{
+.music-btn{
+    background:linear-gradient(135deg,#00f7ff,#007cf0);
+    color:#000;
+    border:none;
+    padding:8px 14px;
+    border-radius:16px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.volume-slider{
     width:100%;
 }
 </style>
@@ -99,105 +128,137 @@ input[type=range]{
 
 <body>
 
-<!-- START SCREEN -->
-<div id="start">CLICK ANYWHERE TO ENTER</div>
+<!-- CLICK OVERLAY -->
+<div class="overlay" id="overlay">
+    <h1>CLICK ANYWHERE</h1>
+</div>
 
 <div class="container">
 
-<img class="profile" src="bgimage.jpg">
+<img src="bgimage.jpg" class="profile">
 
 <h1>Roman Store</h1>
 
+<!-- VISITS -->
 <div class="visits">
-👁️ <span id="v">0</span> visits
+👁️ <span id="visitCount">0</span> visits
 </div>
 
-<p class="bio">ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE</p>
-
+<!-- LINKS -->
 <div class="links">
 
-<a href="https://snapchat.com/add/roman_store4">
-Snapchat
+<a href="https://snapchat.com/add/roman_store4" class="link" target="_blank">
+<img src="https://cdn.simpleicons.org/snapchat/white">
+<span>Snapchat</span>
 <span class="username">roman_store4</span>
 </a>
 
-<a href="https://tiktok.com/@roman_store4">
-TikTok
+<a href="https://tiktok.com/@roman_store4" class="link" target="_blank">
+<img src="https://cdn.simpleicons.org/tiktok/white">
+<span>TikTok</span>
 <span class="username">roman_store4</span>
 </a>
 
-<a href="https://facebook.com/roman.mhamad.196510">
-Facebook
+<a href="https://facebook.com/roman.mhamad.196510" class="link" target="_blank">
+<img src="https://cdn.simpleicons.org/facebook/white">
+<span>Facebook</span>
 <span class="username">roman.mhamad.196510</span>
 </a>
 
-<a href="https://wa.me/9647517039789">
-WhatsApp
+<a href="https://wa.me/9647517039789" class="link" target="_blank">
+<img src="https://cdn.simpleicons.org/whatsapp/white">
+<span>WhatsApp</span>
 <span class="username">+9647517039789</span>
 </a>
 
-<a href="https://t.me/RomanMhamad">
-Telegram
+<a href="https://t.me/RomanMhamad" class="link" target="_blank">
+<img src="https://cdn.simpleicons.org/telegram/white">
+<span>Telegram</span>
 <span class="username">RomanMhamad</span>
 </a>
 
 </div>
 
-<div class="music">
-<audio id="audio" loop>
-<source src="bgmusic.mp3">
+<!-- MUSIC -->
+<div class="music-player">
+
+<audio id="bgMusic" loop>
+<source src="bgmusic.mp3" type="audio/mpeg">
 </audio>
 
-<button onclick="toggle()">Play / Pause</button>
-<input type="range" min="0" max="1" step="0.01" id="vol">
-</div>
+<button class="music-btn" onclick="toggleMusic()">▶️ Play / Pause</button>
+
+<input type="range" min="0" max="1" step="0.01" class="volume-slider" id="volume">
 
 </div>
 
-<script>
-/* ================= FIREBASE RTDB ================= */
-const dbURL = "https://roman-store-default-rtdb.europe-west1.firebasedatabase.app";
+</div>
 
-async function loadVisits(){
-    const res = await fetch(dbURL + "/visits.json");
-    let data = await res.json();
+<!-- FIREBASE VISITS SYSTEM -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getDatabase, ref, get, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 
-    if(!data) data = 0;
+const firebaseConfig = {
+  databaseURL: "https://roman-store-default-rtdb.europe-west1.firebasedatabase.app/"
+};
 
-    data++;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    await fetch(dbURL + "/visits.json", {
-        method:"PUT",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(data)
-    });
+const visitRef = ref(db, "visits/count");
+const deviceKey = "roman_device_id";
 
-    document.getElementById("v").innerText = data;
+let deviceId = localStorage.getItem(deviceKey);
+
+if(!deviceId){
+    deviceId = crypto.randomUUID();
+    localStorage.setItem(deviceKey, deviceId);
 }
 
-/* ================= MUSIC ================= */
-const audio = document.getElementById("audio");
-const vol = document.getElementById("vol");
+const deviceRef = ref(db, "visits/devices/" + deviceId);
 
+/* COUNT ONLY ONCE PER DEVICE */
+get(deviceRef).then((snap)=>{
+    if(!snap.exists()){
+        set(deviceRef, true);
+
+        runTransaction(visitRef, (current)=>{
+            return (current || 0) + 1;
+        });
+    }
+});
+
+/* SHOW COUNT */
+get(visitRef).then((snap)=>{
+    document.getElementById("visitCount").textContent = snap.val() || 0;
+});
+</script>
+
+<!-- MUSIC + OVERLAY -->
+<script>
+const overlay = document.getElementById("overlay");
+const audio = document.getElementById("bgMusic");
+const volume = document.getElementById("volume");
+
+/* CLICK ANYWHERE START */
+overlay.addEventListener("click", async () => {
+    overlay.style.display = "none";
+    try { await audio.play(); } catch(e){}
+});
+
+/* MUSIC */
 audio.volume = 0.5;
-vol.value = 0.5;
+volume.value = 0.5;
 
-function toggle(){
+function toggleMusic(){
     if(audio.paused) audio.play();
     else audio.pause();
 }
 
-vol.addEventListener("input",()=>{
-    audio.volume = vol.value;
+volume.addEventListener("input", ()=>{
+    audio.volume = volume.value;
 });
-
-/* ================= START SCREEN ================= */
-document.getElementById("start").onclick = async ()=>{
-    document.getElementById("start").style.display="none";
-
-    audio.play();
-    loadVisits();
-};
 </script>
 
 </body>
