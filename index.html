@@ -202,22 +202,33 @@ const db = getDatabase(app);
 
 const visitRef = ref(db, "visits/count");
 
-/* DEVICE ID */
+/* SAFE DEVICE ID (FIXED) */
+function generateID(){
+    return 'xxxx-xxxx-xxxx'.replace(/[x]/g,function(){
+        return (Math.random()*16|0).toString(16);
+    });
+}
+
 let deviceId = localStorage.getItem("device_id");
 if(!deviceId){
-    deviceId = crypto.randomUUID();
+    deviceId = generateID();
     localStorage.setItem("device_id", deviceId);
 }
 
-/* COUNT ONCE EVER */
-if(!localStorage.getItem("visited")){
-    runTransaction(visitRef, (val)=>(val||0)+1);
-    localStorage.setItem("visited","true");
-}
+/* COUNT ONCE EVER (FIXED) */
+setTimeout(()=>{
+    if(!localStorage.getItem("visited")){
+        runTransaction(visitRef, (val)=>(val||0)+1);
+        localStorage.setItem("visited","true");
+    }
+},1000);
 
-/* REALTIME */
+/* REALTIME DISPLAY (SAFE) */
 onValue(visitRef,(snap)=>{
-    document.getElementById("visitCount").innerText = snap.val() || 0;
+    const el = document.getElementById("visitCount");
+    if(el){
+        el.innerText = snap.val() || 0;
+    }
 });
 </script>
 
@@ -240,7 +251,6 @@ volume.addEventListener("input",()=>{
     audio.volume=volume.value;
 });
 
-/* MUSIC FIX */
 btn.addEventListener("click",()=>{
     if(audio.paused){
         audio.play();
@@ -251,7 +261,7 @@ btn.addEventListener("click",()=>{
     }
 });
 
-/* BIO */
+/* BIO ANIMATION */
 const texts=[
 "ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE",
 "BEST DIGITAL STORE IN KURDISTAN",
