@@ -55,12 +55,12 @@ body{
     border:3px solid #00f7ff;
 }
 
-/* BIO (RTL FIX) */
+/* BIO */
 .bio{
     direction: rtl;
     text-align: right;
     min-height:20px;
-    border-left:2px solid #00f7ff; /* cursor on correct side */
+    border-left:2px solid #00f7ff;
     white-space:nowrap;
     overflow:hidden;
     display:inline-block;
@@ -96,14 +96,12 @@ body{
     transition:all 0.25s ease;
 }
 
-/* HOVER */
 .link:hover{
     transform:scale(1.05);
     border-color:#38bdf8;
     box-shadow:0 0 12px #38bdf8;
 }
 
-/* CLICK */
 .link:active{
     transform:scale(0.96);
     border-color:#7dd3fc;
@@ -144,6 +142,31 @@ body{
     width:100%;
     margin-top:8px;
     cursor:pointer;
+}
+
+/* 🔥 MADE BY */
+.made-by{
+    margin-top:12px;
+    font-size:12px;
+    opacity:0.7;
+}
+
+.made-by a{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    text-decoration:none;
+    color:#38bdf8;
+    transition:0.2s;
+}
+
+.made-by a:hover{
+    opacity:1;
+    text-shadow:0 0 6px #38bdf8;
+}
+
+.made-by img{
+    width:14px;
 }
 </style>
 </head>
@@ -206,6 +229,15 @@ body{
 <button class="music-btn" id="musicBtn">▶ Play</button>
 
 <input type="range" min="0" max="1" step="0.01" id="volume" class="volume-slider">
+</div>
+
+<!-- 🔥 MADE BY -->
+<div class="made-by">
+Made by:
+<a href="https://facebook.com/MhamaddFarhadd" target="_blank">
+<img src="https://cdn.simpleicons.org/facebook/white">
+Mhamad Farhad
+</a>
 </div>
 
 </div>
