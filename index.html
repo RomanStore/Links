@@ -79,13 +79,23 @@ body{
     align-items:center;
     gap:2px;
     font-weight:600;
-    border:2px solid transparent;
     transition:0.2s;
+
+    /* default border */
+    border:2px solid transparent;
 }
 
+/* 🔵 HOVER BLUE OUTLINE */
 .link:hover{
     border:2px solid #38bdf8;
     transform:scale(1.02);
+    box-shadow:0 0 12px rgba(56,189,248,0.4);
+}
+
+/* 🔵 CLICK EFFECT */
+.link:active{
+    border:2px solid #0ea5e9;
+    transform:scale(0.98);
 }
 
 .link img{
@@ -136,7 +146,6 @@ body{
 
 <body>
 
-<!-- OVERLAY -->
 <div class="overlay" id="overlay">
     <h1>CLICK ANYWHERE</h1>
 </div>
@@ -189,7 +198,8 @@ body{
 
 <div class="music-player">
 
-<audio id="bgMusic" loop>
+<!-- ❌ NO LOOP -->
+<audio id="bgMusic">
 <source src="bgmusic.mp3" type="audio/mpeg">
 </audio>
 
@@ -201,7 +211,7 @@ body{
 
 </div>
 
-<!-- FIREBASE REALTIME FIX -->
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
 import { getDatabase, ref, runTransaction, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
@@ -214,32 +224,29 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const visitRef = ref(db, "visits/count");
-const deviceRefKey = "roman_device_id";
 
-let deviceId = localStorage.getItem(deviceRefKey);
-
+let deviceId = localStorage.getItem("roman_device_id");
 if(!deviceId){
     deviceId = crypto.randomUUID();
-    localStorage.setItem(deviceRefKey, deviceId);
+    localStorage.setItem("roman_device_id", deviceId);
 }
 
 const deviceRef = ref(db, "visits/devices/" + deviceId);
 
-/* SAFE COUNT (NO DOUBLE BUG) */
+/* SAFE COUNT */
 get(deviceRef).then((snap)=>{
     if(!snap.exists()){
         set(deviceRef, true);
-        runTransaction(visitRef, (current)=> (current || 0) + 1);
+        runTransaction(visitRef, (c)=> (c || 0) + 1);
     }
 });
 
-/* REAL-TIME VISITS (NO REFRESH NEEDED) */
-onValue(visitRef, (snapshot)=>{
-    document.getElementById("visitCount").textContent = snapshot.val() || 0;
+/* REAL TIME UPDATE */
+onValue(visitRef, (snap)=>{
+    document.getElementById("visitCount").textContent = snap.val() || 0;
 });
 </script>
 
-<!-- MUSIC + OVERLAY + BIO -->
 <script>
 const overlay = document.getElementById("overlay");
 const audio = document.getElementById("bgMusic");
@@ -250,6 +257,7 @@ overlay.addEventListener("click", async () => {
     try { await audio.play(); } catch(e){}
 });
 
+/* VOLUME */
 audio.volume = 0.5;
 volume.value = 0.5;
 
@@ -262,7 +270,7 @@ volume.addEventListener("input", ()=>{
     audio.volume = volume.value;
 });
 
-/* BIO TYPE + BACKSPACE LOOP */
+/* BIO */
 const bioText = document.getElementById("bioText");
 
 const texts = [
@@ -271,31 +279,29 @@ const texts = [
 "FAST | SAFE | RELIABLE"
 ];
 
-let i = 0;
-let index = 0;
-let deleting = false;
+let i=0,index=0,deleting=false;
 
 function type(){
     let current = texts[index];
 
     if(!deleting){
-        bioText.textContent = current.substring(0, i++);
+        bioText.textContent = current.substring(0,i++);
         if(i > current.length){
             deleting = true;
-            setTimeout(type, 1200);
+            setTimeout(type,1200);
             return;
         }
     } else {
-        bioText.textContent = current.substring(0, i--);
+        bioText.textContent = current.substring(0,i--);
         if(i < 0){
             deleting = false;
-            index = (index + 1) % texts.length;
-            setTimeout(type, 300);
+            index = (index+1)%texts.length;
+            setTimeout(type,300);
             return;
         }
     }
 
-    setTimeout(type, deleting ? 40 : 70);
+    setTimeout(type,deleting ? 40 : 70);
 }
 
 type();
