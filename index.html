@@ -55,7 +55,6 @@ body{
     border-color:#38bdf8;
 }
 
-/* PROFILE */
 .profile{
     width:110px;
     height:110px;
@@ -66,7 +65,6 @@ body{
 
 h1{margin:5px 0;}
 
-/* BIO */
 .bio{
     font-size:14px;
     opacity:0.85;
@@ -78,14 +76,12 @@ h1{margin:5px 0;}
     display:inline-block;
 }
 
-/* VISITS */
 .visits{
     font-size:13px;
     opacity:0.8;
     margin-bottom:10px;
 }
 
-/* LINKS */
 .links{
     display:flex;
     flex-direction:column;
@@ -126,7 +122,6 @@ h1{margin:5px 0;}
     opacity:0.7;
 }
 
-/* MUSIC */
 .music-player{
     margin-top:10px;
     background:#1f2937;
@@ -154,7 +149,6 @@ h1{margin:5px 0;}
 
 <body>
 
-<!-- OVERLAY -->
 <div class="overlay" id="overlay">
     <h1>CLICK ANYWHERE TO ENTER</h1>
 </div>
@@ -172,7 +166,6 @@ h1{margin:5px 0;}
 <p class="bio" id="bioText"></p>
 
 <div class="links">
-
 <a href="https://snapchat.com/add/roman_store4" class="link">
 <img src="https://cdn.simpleicons.org/snapchat/white">
 <span>Snapchat</span>
@@ -202,66 +195,76 @@ h1{margin:5px 0;}
 <span>Telegram</span>
 <span class="username">RomanMhamad</span>
 </a>
-
 </div>
 
-<!-- MUSIC -->
 <div class="music-player">
-
 <audio id="bgMusic">
 <source src="bgmusic.mp3" type="audio/mpeg">
 </audio>
 
-<button class="music-btn" id="musicBtn">▶️ Play</button>
+<button class="music-btn" onclick="toggleMusic()">▶️ Play / Pause</button>
 
 <input type="range" min="0" max="1" step="0.01" class="volume-slider" id="volume">
-
 </div>
 
 </div>
 
+<!-- ================= FIREBASE FIXED VISITS ================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, get, set, runTransaction, onValue } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://roman-store-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "roman-store",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const visitRef = ref(db, "visits/count");
+
+/* 🔥 FIXED: SAFE REAL COUNTER (NO DOUBLE BUGS) */
+function registerVisit(){
+    const visited = sessionStorage.getItem("visited");
+
+    if(!visited){
+        sessionStorage.setItem("visited","1");
+
+        runTransaction(visitRef, (current)=>{
+            return (current || 0) + 1;
+        });
+    }
+}
+
+/* realtime display */
+onValue(visitRef, (snap)=>{
+    document.getElementById("visitCount").innerText = snap.val() || 0;
+});
+
+/* start */
+registerVisit();
+</script>
+
+<!-- ================= YOUR ORIGINAL SCRIPT ================= -->
 <script>
-/* ================= OVERLAY ================= */
 const overlay = document.getElementById("overlay");
 const audio = document.getElementById("bgMusic");
 const volume = document.getElementById("volume");
-const btn = document.getElementById("musicBtn");
-
-let isPlaying = false;
 
 overlay.addEventListener("click", async ()=>{
     overlay.style.display="none";
     try{
         await audio.play();
-        isPlaying = true;
-        btn.textContent = "⏸️ Pause";
     }catch(e){}
 });
 
-/* ================= FIXED BUTTON SYNC ================= */
-btn.addEventListener("click", ()=>{
-    if(audio.paused){
-        audio.play();
-        btn.textContent = "⏸️ Pause";
-        isPlaying = true;
-    }else{
-        audio.pause();
-        btn.textContent = "▶️ Play";
-        isPlaying = false;
-    }
-});
-
-audio.addEventListener("play", ()=>{
-    btn.textContent = "⏸️ Pause";
-    isPlaying = true;
-});
-
-audio.addEventListener("pause", ()=>{
-    btn.textContent = "▶️ Play";
-    isPlaying = false;
-});
-
-/* ================= VOLUME ================= */
 audio.volume = 0.5;
 volume.value = 0.5;
 
@@ -269,7 +272,14 @@ volume.addEventListener("input",()=>{
     audio.volume = volume.value;
 });
 
-/* ================= BIO TYPE (FIXED 2 TEXTS ONLY) ================= */
+function toggleMusic(){
+    if(audio.paused){
+        audio.play();
+    }else{
+        audio.pause();
+    }
+});
+
 const bioText = document.getElementById("bioText");
 
 const texts = [
@@ -277,31 +287,29 @@ const texts = [
     "SAFE , RELIABLE , RESPECTFUL"
 ];
 
-let i = 0;
-let index = 0;
-let deleting = false;
+let i=0,index=0,deleting=false;
 
 function type(){
     let current = texts[index];
 
     if(!deleting){
-        bioText.textContent = current.substring(0, i++);
-        if(i > current.length){
-            deleting = true;
-            setTimeout(type, 1500); // pause
+        bioText.textContent = current.substring(0,i++);
+        if(i>current.length){
+            deleting=true;
+            setTimeout(type,1500);
             return;
         }
-    } else {
-        bioText.textContent = current.substring(0, i--);
-        if(i < 0){
-            deleting = false;
-            index = (index + 1) % texts.length;
-            setTimeout(type, 500);
+    }else{
+        bioText.textContent = current.substring(0,i--);
+        if(i<0){
+            deleting=false;
+            index=(index+1)%texts.length;
+            setTimeout(type,500);
             return;
         }
     }
 
-    setTimeout(type, deleting ? 35 : 60);
+    setTimeout(type, deleting?35:60);
 }
 
 type();
