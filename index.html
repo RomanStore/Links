@@ -193,7 +193,7 @@ body{
 <source src="bgmusic.mp3">
 </audio>
 
-<button class="music-btn" onclick="toggleMusic()">Play</button>
+<button class="music-btn" id="musicBtn">▶ Play</button>
 
 <input type="range" min="0" max="1" step="0.01" id="volume" class="volume-slider">
 
@@ -220,14 +220,22 @@ const db = getDatabase(app);
 
 const visitRef = ref(db, "visits/count");
 
-let counted = sessionStorage.getItem("counted");
+/* ✅ FIX: UNIQUE DEVICE ID (permanent per browser/device) */
+let deviceId = localStorage.getItem("device_id");
 
-if(!counted){
-    runTransaction(visitRef, (val) => (val || 0) + 1);
-    sessionStorage.setItem("counted","1");
+if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem("device_id", deviceId);
 }
 
-onValue(visitRef,(snap)=>{
+/* ✅ FIX: COUNT ONLY ONCE PER DEVICE EVER */
+if (!localStorage.getItem("visited_" + deviceId)) {
+    runTransaction(visitRef, (val) => (val || 0) + 1);
+    localStorage.setItem("visited_" + deviceId, "true");
+}
+
+/* REALTIME */
+onValue(visitRef, (snap) => {
     document.getElementById("visitCount").innerText = snap.val() || 0;
 });
 </script>
@@ -236,18 +244,37 @@ onValue(visitRef,(snap)=>{
 const overlay = document.getElementById("overlay");
 const audio = document.getElementById("bgMusic");
 const volume = document.getElementById("volume");
+const btn = document.getElementById("musicBtn");
 
+let started = false;
+
+/* overlay start */
 overlay.addEventListener("click",()=>{
     overlay.style.display="none";
     audio.play();
+    started = true;
+    btn.textContent = "⏸ Pause";
 });
+
+audio.volume = 0.5;
+volume.value = 0.5;
 
 volume.addEventListener("input",()=>{
     audio.volume = volume.value;
 });
-audio.volume = 0.5;
 
-/* BIO TYPE */
+/* ✅ FIX MUSIC BUTTON */
+btn.addEventListener("click",()=>{
+    if(audio.paused){
+        audio.play();
+        btn.textContent = "⏸ Pause";
+    } else {
+        audio.pause();
+        btn.textContent = "▶ Play";
+    }
+});
+
+/* BIO */
 const texts=[
 "ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE",
 "BEST DIGITAL STORE IN KURDISTAN",
@@ -269,11 +296,6 @@ if(i<0){d=false;t=(t+1)%texts.length;setTimeout(type,300);return;}
 setTimeout(type,d?40:70);
 }
 type();
-
-function toggleMusic(){
-if(audio.paused) audio.play();
-else audio.pause();
-}
 </script>
 
 </body>
