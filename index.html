@@ -30,7 +30,6 @@ body{
     align-items:center;
     z-index:999;
     cursor:pointer;
-    text-align:center;
 }
 
 .overlay h1{
@@ -45,7 +44,6 @@ body{
     width:100%;
     max-width:420px;
     text-align:center;
-    box-shadow:0 0 40px rgba(0,255,255,0.2);
 }
 
 /* PROFILE */
@@ -81,8 +79,8 @@ body{
     align-items:center;
     gap:2px;
     font-weight:600;
-    transition:0.2s;
     border:2px solid transparent;
+    transition:0.2s;
 }
 
 .link:hover{
@@ -123,12 +121,22 @@ body{
 .volume-slider{
     width:100%;
 }
+
+/* BIO */
+.bio{
+    font-size:14px;
+    min-height:20px;
+    border-right:2px solid #00f7ff;
+    white-space:nowrap;
+    overflow:hidden;
+    display:inline-block;
+}
 </style>
 </head>
 
 <body>
 
-<!-- CLICK OVERLAY -->
+<!-- OVERLAY -->
 <div class="overlay" id="overlay">
     <h1>CLICK ANYWHERE</h1>
 </div>
@@ -139,12 +147,12 @@ body{
 
 <h1>Roman Store</h1>
 
-<!-- VISITS -->
 <div class="visits">
 👁️ <span id="visitCount">0</span> visits
 </div>
 
-<!-- LINKS -->
+<p class="bio" id="bioText"></p>
+
 <div class="links">
 
 <a href="https://snapchat.com/add/roman_store4" class="link" target="_blank">
@@ -179,7 +187,6 @@ body{
 
 </div>
 
-<!-- MUSIC -->
 <div class="music-player">
 
 <audio id="bgMusic" loop>
@@ -194,10 +201,10 @@ body{
 
 </div>
 
-<!-- FIREBASE VISITS SYSTEM -->
+<!-- FIREBASE REALTIME FIX -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getDatabase, ref, get, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+import { getDatabase, ref, runTransaction, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 
 const firebaseConfig = {
   databaseURL: "https://roman-store-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -207,47 +214,42 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const visitRef = ref(db, "visits/count");
-const deviceKey = "roman_device_id";
+const deviceRefKey = "roman_device_id";
 
-let deviceId = localStorage.getItem(deviceKey);
+let deviceId = localStorage.getItem(deviceRefKey);
 
 if(!deviceId){
     deviceId = crypto.randomUUID();
-    localStorage.setItem(deviceKey, deviceId);
+    localStorage.setItem(deviceRefKey, deviceId);
 }
 
 const deviceRef = ref(db, "visits/devices/" + deviceId);
 
-/* COUNT ONLY ONCE PER DEVICE */
+/* SAFE COUNT (NO DOUBLE BUG) */
 get(deviceRef).then((snap)=>{
     if(!snap.exists()){
         set(deviceRef, true);
-
-        runTransaction(visitRef, (current)=>{
-            return (current || 0) + 1;
-        });
+        runTransaction(visitRef, (current)=> (current || 0) + 1);
     }
 });
 
-/* SHOW COUNT */
-get(visitRef).then((snap)=>{
-    document.getElementById("visitCount").textContent = snap.val() || 0;
+/* REAL-TIME VISITS (NO REFRESH NEEDED) */
+onValue(visitRef, (snapshot)=>{
+    document.getElementById("visitCount").textContent = snapshot.val() || 0;
 });
 </script>
 
-<!-- MUSIC + OVERLAY -->
+<!-- MUSIC + OVERLAY + BIO -->
 <script>
 const overlay = document.getElementById("overlay");
 const audio = document.getElementById("bgMusic");
 const volume = document.getElementById("volume");
 
-/* CLICK ANYWHERE START */
 overlay.addEventListener("click", async () => {
     overlay.style.display = "none";
     try { await audio.play(); } catch(e){}
 });
 
-/* MUSIC */
 audio.volume = 0.5;
 volume.value = 0.5;
 
@@ -259,6 +261,44 @@ function toggleMusic(){
 volume.addEventListener("input", ()=>{
     audio.volume = volume.value;
 });
+
+/* BIO TYPE + BACKSPACE LOOP */
+const bioText = document.getElementById("bioText");
+
+const texts = [
+"ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE",
+"BEST DIGITAL STORE IN KURDISTAN",
+"FAST | SAFE | RELIABLE"
+];
+
+let i = 0;
+let index = 0;
+let deleting = false;
+
+function type(){
+    let current = texts[index];
+
+    if(!deleting){
+        bioText.textContent = current.substring(0, i++);
+        if(i > current.length){
+            deleting = true;
+            setTimeout(type, 1200);
+            return;
+        }
+    } else {
+        bioText.textContent = current.substring(0, i--);
+        if(i < 0){
+            deleting = false;
+            index = (index + 1) % texts.length;
+            setTimeout(type, 300);
+            return;
+        }
+    }
+
+    setTimeout(type, deleting ? 40 : 70);
+}
+
+type();
 </script>
 
 </body>
