@@ -19,6 +19,7 @@ body{
     min-height:100vh;
 }
 
+/* OVERLAY FIXED CENTER */
 .overlay{
     position:fixed;
     inset:0;
@@ -29,9 +30,14 @@ body{
     align-items:center;
     z-index:999;
     cursor:pointer;
+    text-align:center;
 }
-.overlay h1{ color:#00f7ff; }
+.overlay h1{
+    color:#00f7ff;
+    width:100%;
+}
 
+/* MAIN */
 .container{
     background:#111827;
     padding:20px;
@@ -86,6 +92,7 @@ body{
 
 .link img{ width:22px; }
 
+/* MUSIC */
 .music-player{
     margin-top:10px;
     background:#1f2937;
@@ -190,32 +197,37 @@ const db = getDatabase(app);
 
 const visitRef = ref(db, "visits/count");
 
-/* DEVICE ID */
-function generateID(){
-    return 'xxxx-xxxx-xxxx'.replace(/[x]/g,()=> (Math.random()*16|0).toString(16));
+/* STRONG DEVICE ID (LOCAL + COOKIE) */
+function getDeviceID(){
+    let id = localStorage.getItem("device_id");
+
+    if(!id){
+        id = document.cookie.replace(/(?:(?:^|.*;\s*)device_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    }
+
+    if(!id){
+        id = 'dev-' + Math.random().toString(36).substring(2) + Date.now();
+        localStorage.setItem("device_id", id);
+        document.cookie = "device_id=" + id + "; path=/; max-age=31536000";
+    }
+
+    return id;
 }
 
-let deviceId = localStorage.getItem("device_id");
-if(!deviceId){
-    deviceId = generateID();
-    localStorage.setItem("device_id", deviceId);
-}
-
-/* UNIQUE DEVICE SYSTEM */
+const deviceId = getDeviceID();
 const deviceRef = ref(db, "devices/" + deviceId);
 
-get(deviceRef).then((snap)=>{
+/* COUNT ONLY ONCE EVER */
+get(deviceRef).then(async (snap)=>{
     if(!snap.exists()){
-        // first time device
-        set(deviceRef, true);
-        runTransaction(visitRef, (val)=>(val||0)+1);
+        await set(deviceRef, true);
+        await runTransaction(visitRef, (val)=>(val||0)+1);
     }
 });
 
-/* REALTIME COUNT */
+/* REALTIME */
 onValue(visitRef,(snap)=>{
-    const el=document.getElementById("visitCount");
-    if(el) el.innerText=snap.val()||0;
+    document.getElementById("visitCount").innerText = snap.val() || 0;
 });
 </script>
 
@@ -225,12 +237,14 @@ const audio=document.getElementById("bgMusic");
 const volume=document.getElementById("volume");
 const btn=document.getElementById("musicBtn");
 
+/* ENTER */
 overlay.addEventListener("click",()=>{
     overlay.style.display="none";
     audio.play();
     btn.textContent="⏸ Pause";
 });
 
+/* VOLUME */
 audio.volume=0.5;
 volume.value=0.5;
 
@@ -238,6 +252,7 @@ volume.addEventListener("input",()=>{
     audio.volume=volume.value;
 });
 
+/* PLAY/PAUSE FIX */
 btn.addEventListener("click",()=>{
     if(audio.paused){
         audio.play();
@@ -248,7 +263,12 @@ btn.addEventListener("click",()=>{
     }
 });
 
-/* BIO FIXED */
+/* WHEN AUDIO ENDS FIX */
+audio.addEventListener("ended",()=>{
+    btn.textContent="▶ Play";
+});
+
+/* BIO */
 const texts=[
 "ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE",
 "BEST DIGITAL STORE IN KURDISTAN"
