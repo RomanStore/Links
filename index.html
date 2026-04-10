@@ -19,25 +19,23 @@ body{
     min-height:100vh;
 }
 
-/* ================= OVERLAY ================= */
+/* OVERLAY */
 .overlay{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.65);
-    backdrop-filter:blur(12px);
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(10px);
     display:flex;
     justify-content:center;
     align-items:center;
     z-index:999;
     cursor:pointer;
-    text-align:center;
 }
 .overlay h1{
     color:#00f7ff;
-    margin:0;
 }
 
-/* ================= MAIN CARD ================= */
+/* MAIN */
 .container{
     background:#111827;
     padding:20px;
@@ -51,8 +49,8 @@ body{
 }
 
 .container:hover{
-    box-shadow:0 0 50px rgba(0,247,255,0.4);
     border-color:#38bdf8;
+    box-shadow:0 0 55px rgba(0,247,255,0.4);
 }
 
 /* PROFILE */
@@ -61,28 +59,23 @@ body{
     height:110px;
     border-radius:50%;
     border:3px solid #00f7ff;
-    margin-bottom:10px;
 }
-
-h1{margin:5px 0;}
 
 /* BIO */
 .bio{
-    font-size:14px;
-    opacity:0.85;
-    margin-bottom:10px;
     min-height:20px;
     border-right:2px solid #00f7ff;
     white-space:nowrap;
     overflow:hidden;
     display:inline-block;
+    margin-bottom:10px;
 }
 
 /* VISITS */
 .visits{
     font-size:13px;
-    opacity:0.8;
     margin-bottom:10px;
+    opacity:0.8;
 }
 
 /* LINKS */
@@ -93,7 +86,7 @@ h1{margin:5px 0;}
 }
 
 .link{
-    padding:10px 12px;
+    padding:10px;
     border-radius:12px;
     text-decoration:none;
     color:white;
@@ -101,60 +94,51 @@ h1{margin:5px 0;}
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:2px;
+    gap:3px;
     font-weight:600;
-    transition:0.2s;
     border:2px solid transparent;
+    transition:0.2s;
 }
 
 .link:hover{
-    transform:scale(1.03);
-    border:2px solid #38bdf8;
+    border-color:#7dd3fc;
+    transform:scale(1.02);
 }
 
 .link:active{
-    border:2px solid #7dd3fc;
+    border-color:#38bdf8;
 }
 
 .link img{
     width:22px;
-    height:22px;
-}
-
-.link span.username{
-    font-size:11px;
-    opacity:0.7;
 }
 
 /* MUSIC */
 .music-player{
     margin-top:10px;
     background:#1f2937;
-    border-radius:14px;
+    border-radius:12px;
     padding:10px;
 }
 
 .music-btn{
-    background:linear-gradient(135deg,#00f7ff,#007cf0);
-    color:#000;
-    border:none;
     padding:8px 14px;
-    border-radius:16px;
-    cursor:pointer;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#00f7ff,#007cf0);
     font-weight:600;
-    font-size:13px;
-    margin-bottom:8px;
+    cursor:pointer;
 }
 
 .volume-slider{
     width:100%;
+    margin-top:8px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- OVERLAY -->
 <div class="overlay" id="overlay">
     <h1>CLICK ANYWHERE TO ENTER</h1>
 </div>
@@ -172,165 +156,124 @@ h1{margin:5px 0;}
 <p class="bio" id="bioText"></p>
 
 <div class="links">
-
-<a href="https://snapchat.com/add/roman_store4" class="link">
+<a class="link" href="https://snapchat.com/add/roman_store4">
 <img src="https://cdn.simpleicons.org/snapchat/white">
 <span>Snapchat</span>
-<span class="username">roman_store4</span>
+<span>roman_store4</span>
 </a>
 
-<a href="https://tiktok.com/@roman_store4" class="link">
+<a class="link" href="https://tiktok.com/@roman_store4">
 <img src="https://cdn.simpleicons.org/tiktok/white">
 <span>TikTok</span>
-<span class="username">roman_store4</span>
+<span>roman_store4</span>
 </a>
 
-<a href="https://facebook.com/roman.mhamad.196510" class="link">
+<a class="link" href="https://facebook.com/roman.mhamad.196510">
 <img src="https://cdn.simpleicons.org/facebook/white">
 <span>Facebook</span>
-<span class="username">roman.mhamad.196510</span>
+<span>roman.mhamad.196510</span>
 </a>
 
-<a href="https://wa.me/9647517039789" class="link">
+<a class="link" href="https://wa.me/9647517039789">
 <img src="https://cdn.simpleicons.org/whatsapp/white">
 <span>WhatsApp</span>
-<span class="username">+9647517039789</span>
+<span>+9647517039789</span>
 </a>
 
-<a href="https://t.me/RomanMhamad" class="link">
+<a class="link" href="https://t.me/RomanMhamad">
 <img src="https://cdn.simpleicons.org/telegram/white">
 <span>Telegram</span>
-<span class="username">RomanMhamad</span>
+<span>RomanMhamad</span>
 </a>
-
 </div>
 
-<!-- MUSIC -->
 <div class="music-player">
 
 <audio id="bgMusic">
-<source src="bgmusic.mp3" type="audio/mpeg">
+<source src="bgmusic.mp3">
 </audio>
 
-<button class="music-btn" onclick="toggleMusic()">▶️ Play / Pause</button>
+<button class="music-btn" onclick="toggleMusic()">Play</button>
 
-<input type="range" min="0" max="1" step="0.01" class="volume-slider" id="volume">
-
-</div>
+<input type="range" min="0" max="1" step="0.01" id="volume" class="volume-slider">
 
 </div>
 
-<!-- FIREBASE -->
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-/* 🔴 PASTE YOUR FIREBASE CONFIG HERE */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   databaseURL: "https://roman-store-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "roman-store",
   storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  messagingSenderId: "35203690693",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* DEVICE ID (PREVENT DOUBLE COUNT) */
-let deviceId = localStorage.getItem("device_id");
-if(!deviceId){
-    deviceId = crypto.randomUUID();
-    localStorage.setItem("device_id", deviceId);
-}
-
-/* VISIT COUNT (ONLY ONCE PER DEVICE) */
 const visitRef = ref(db, "visits/count");
 
-get(visitRef).then(snapshot=>{
-    let count = snapshot.val() || 0;
+let counted = sessionStorage.getItem("counted");
 
-    if(!localStorage.getItem("visited")){
-        count++;
-        set(visitRef, count);
-        localStorage.setItem("visited","1");
-    }
+if(!counted){
+    runTransaction(visitRef, (val) => (val || 0) + 1);
+    sessionStorage.setItem("counted","1");
+}
 
-    document.getElementById("visitCount").innerText = count;
-});
-
-/* REALTIME UPDATE */
 onValue(visitRef,(snap)=>{
     document.getElementById("visitCount").innerText = snap.val() || 0;
 });
 </script>
 
 <script>
-/* OVERLAY + AUDIO */
 const overlay = document.getElementById("overlay");
 const audio = document.getElementById("bgMusic");
 const volume = document.getElementById("volume");
 
-overlay.addEventListener("click", async ()=>{
+overlay.addEventListener("click",()=>{
     overlay.style.display="none";
-    try{
-        await audio.play();
-    }catch(e){}
+    audio.play();
 });
-
-/* VOLUME */
-audio.volume = 0.5;
-volume.value = 0.5;
 
 volume.addEventListener("input",()=>{
     audio.volume = volume.value;
 });
+audio.volume = 0.5;
 
-/* MUSIC (NO LOOP AFTER END) */
-function toggleMusic(){
-    if(audio.paused){
-        audio.play();
-    } else {
-        audio.pause();
-    }
-}
-
-/* BIO TYPE + BACKSPACE */
-const bioText = document.getElementById("bioText");
-
-const texts = [
-    "ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE",
-    "BEST DIGITAL STORE IN KURDISTAN",
-    "FAST | SAFE | RELIABLE"
+/* BIO TYPE */
+const texts=[
+"ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE",
+"BEST DIGITAL STORE IN KURDISTAN",
+"FAST | SAFE | RELIABLE"
 ];
 
-let i=0, index=0, deleting=false;
+let i=0,t=0,d=false;
+const bio=document.getElementById("bioText");
 
 function type(){
-    let current = texts[index];
-
-    if(!deleting){
-        bioText.textContent = current.substring(0,i++);
-        if(i>current.length){
-            deleting=true;
-            setTimeout(type,1000);
-            return;
-        }
-    } else {
-        bioText.textContent = current.substring(0,i--);
-        if(i<0){
-            deleting=false;
-            index=(index+1)%texts.length;
-            setTimeout(type,300);
-            return;
-        }
-    }
-
-    setTimeout(type, deleting?40:70);
+let c=texts[t];
+if(!d){
+bio.textContent=c.slice(0,i++);
+if(i>c.length){d=true;setTimeout(type,1000);return;}
+}else{
+bio.textContent=c.slice(0,i--);
+if(i<0){d=false;t=(t+1)%texts.length;setTimeout(type,300);return;}
+}
+setTimeout(type,d?40:70);
 }
 type();
+
+function toggleMusic(){
+if(audio.paused) audio.play();
+else audio.pause();
+}
 </script>
 
 </body>
