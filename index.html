@@ -41,11 +41,6 @@ body{
     text-align:center;
     box-shadow:0 0 40px rgba(0,255,255,0.25);
     border:2px solid rgba(0,247,255,0.2);
-    transition:0.3s;
-}
-.container:hover{
-    border-color:#38bdf8;
-    box-shadow:0 0 55px rgba(0,247,255,0.4);
 }
 
 .profile{
@@ -87,14 +82,8 @@ body{
     align-items:center;
     gap:3px;
     font-weight:600;
-    border:2px solid transparent;
-    transition:0.2s;
 }
-.link:hover{
-    border-color:#7dd3fc;
-    transform:scale(1.02);
-}
-.link:active{ border-color:#38bdf8; }
+
 .link img{ width:22px; }
 
 .music-player{
@@ -182,10 +171,9 @@ body{
 
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, onValue, runTransaction, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBVcBdKGFqUTSK4QWPicEMfzuK5Xq4wh4Y",
@@ -202,11 +190,9 @@ const db = getDatabase(app);
 
 const visitRef = ref(db, "visits/count");
 
-/* SAFE DEVICE ID (FIXED) */
+/* DEVICE ID */
 function generateID(){
-    return 'xxxx-xxxx-xxxx'.replace(/[x]/g,function(){
-        return (Math.random()*16|0).toString(16);
-    });
+    return 'xxxx-xxxx-xxxx'.replace(/[x]/g,()=> (Math.random()*16|0).toString(16));
 }
 
 let deviceId = localStorage.getItem("device_id");
@@ -215,20 +201,21 @@ if(!deviceId){
     localStorage.setItem("device_id", deviceId);
 }
 
-/* COUNT ONCE EVER (FIXED) */
-setTimeout(()=>{
-    if(!localStorage.getItem("visited")){
-        runTransaction(visitRef, (val)=>(val||0)+1);
-        localStorage.setItem("visited","true");
-    }
-},1000);
+/* UNIQUE DEVICE SYSTEM */
+const deviceRef = ref(db, "devices/" + deviceId);
 
-/* REALTIME DISPLAY (SAFE) */
-onValue(visitRef,(snap)=>{
-    const el = document.getElementById("visitCount");
-    if(el){
-        el.innerText = snap.val() || 0;
+get(deviceRef).then((snap)=>{
+    if(!snap.exists()){
+        // first time device
+        set(deviceRef, true);
+        runTransaction(visitRef, (val)=>(val||0)+1);
     }
+});
+
+/* REALTIME COUNT */
+onValue(visitRef,(snap)=>{
+    const el=document.getElementById("visitCount");
+    if(el) el.innerText=snap.val()||0;
 });
 </script>
 
@@ -261,26 +248,33 @@ btn.addEventListener("click",()=>{
     }
 });
 
-/* BIO ANIMATION */
+/* BIO FIXED */
 const texts=[
 "ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE",
-"BEST DIGITAL STORE IN KURDISTAN",
-"FAST | SAFE | RELIABLE"
+"BEST DIGITAL STORE IN KURDISTAN"
 ];
 
-let i=0,t=0,d=false;
+let i=0,t=0,del=false;
 const bio=document.getElementById("bioText");
 
 function type(){
-let c=texts[t];
-if(!d){
-bio.textContent=c.slice(0,i++);
-if(i>c.length){d=true;setTimeout(type,1000);return;}
+let txt=texts[t];
+
+if(!del){
+    bio.textContent=txt.substring(0,i++);
+    if(i>txt.length){
+        del=true;
+        setTimeout(type,1500);
+        return;
+    }
 }else{
-bio.textContent=c.slice(0,i--);
-if(i<0){d=false;t=(t+1)%texts.length;setTimeout(type,300);return;}
+    bio.textContent=txt.substring(0,i--);
+    if(i<0){
+        del=false;
+        t=(t+1)%texts.length;
+    }
 }
-setTimeout(type,d?40:70);
+setTimeout(type, del?40:70);
 }
 type();
 </script>
