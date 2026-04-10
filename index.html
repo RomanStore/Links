@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Roman Store | Links</title>
 
-<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/847/847969.png">
-
 <style>
 body{
     margin:0;
@@ -18,162 +16,34 @@ body{
     align-items:center;
     min-height:100vh;
 }
-
-.overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.7);
-    backdrop-filter:blur(10px);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:999;
-    cursor:pointer;
-}
-.overlay h1{ color:#00f7ff; }
-
 .container{
     background:#111827;
     padding:20px;
     border-radius:18px;
-    width:100%;
     max-width:420px;
     text-align:center;
-    box-shadow:0 0 40px rgba(0,255,255,0.25);
     border:2px solid rgba(0,247,255,0.2);
 }
-
-.profile{
-    width:110px;
-    height:110px;
-    border-radius:50%;
-    border:3px solid #00f7ff;
-}
-
 .bio{
-    min-height:20px;
     border-right:2px solid #00f7ff;
     white-space:nowrap;
     overflow:hidden;
-    display:inline-block;
-    margin-bottom:10px;
-}
-
-.visits{
-    font-size:13px;
-    margin-bottom:10px;
-    opacity:0.8;
-}
-
-.links{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.link{
-    padding:10px;
-    border-radius:12px;
-    text-decoration:none;
-    color:white;
-    background:linear-gradient(135deg,#00f7ff,#007cf0);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:3px;
-    font-weight:600;
-}
-
-.link img{ width:22px; }
-
-.music-player{
-    margin-top:10px;
-    background:#1f2937;
-    border-radius:12px;
-    padding:10px;
-}
-
-.music-btn{
-    padding:8px 14px;
-    border:none;
-    border-radius:14px;
-    background:linear-gradient(135deg,#00f7ff,#007cf0);
-    font-weight:600;
-    cursor:pointer;
-}
-
-.volume-slider{
-    width:100%;
-    margin-top:8px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="overlay" id="overlay">
-    <h1>CLICK ANYWHERE TO ENTER</h1>
-</div>
-
 <div class="container">
-
-<img src="bgimage.jpg" class="profile">
-
 <h1>Roman Store</h1>
 
-<div class="visits">
-👁️ <span id="visitCount">0</span> visits
-</div>
-
+<div>👁️ <span id="visitCount">0</span> visits</div>
 <p class="bio" id="bioText"></p>
-
-<div class="links">
-<a class="link" href="https://snapchat.com/add/roman_store4">
-<img src="https://cdn.simpleicons.org/snapchat/white">
-<span>Snapchat</span>
-<span>roman_store4</span>
-</a>
-
-<a class="link" href="https://tiktok.com/@roman_store4">
-<img src="https://cdn.simpleicons.org/tiktok/white">
-<span>TikTok</span>
-<span>roman_store4</span>
-</a>
-
-<a class="link" href="https://facebook.com/roman.mhamad.196510">
-<img src="https://cdn.simpleicons.org/facebook/white">
-<span>Facebook</span>
-<span>roman.mhamad.196510</span>
-</a>
-
-<a class="link" href="https://wa.me/9647517039789">
-<img src="https://cdn.simpleicons.org/whatsapp/white">
-<span>WhatsApp</span>
-<span>+9647517039789</span>
-</a>
-
-<a class="link" href="https://t.me/RomanMhamad">
-<img src="https://cdn.simpleicons.org/telegram/white">
-<span>Telegram</span>
-<span>RomanMhamad</span>
-</a>
-</div>
-
-<div class="music-player">
-<audio id="bgMusic">
-<source src="bgmusic.mp3">
-</audio>
-
-<button class="music-btn" id="musicBtn">▶ Play</button>
-
-<input type="range" min="0" max="1" step="0.01" id="volume" class="volume-slider">
-</div>
-
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue, runTransaction, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, get, set, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBVcBdKGFqUTSK4QWPicEMfzuK5Xq4wh4Y",
@@ -188,70 +58,52 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const visitRef = ref(db, "visits/count");
+const visitRef = ref(db,"visits/count");
 
-/* DEVICE ID */
-function generateID(){
-    return 'xxxx-xxxx-xxxx'.replace(/[x]/g,()=> (Math.random()*16|0).toString(16));
-}
-
-let deviceId = localStorage.getItem("device_id");
-if(!deviceId){
-    deviceId = generateID();
-    localStorage.setItem("device_id", deviceId);
-}
-
-/* UNIQUE DEVICE SYSTEM */
-const deviceRef = ref(db, "devices/" + deviceId);
-
-get(deviceRef).then((snap)=>{
-    if(!snap.exists()){
-        // first time device
-        set(deviceRef, true);
-        runTransaction(visitRef, (val)=>(val||0)+1);
+/* GET IP */
+async function getIP(){
+    try{
+        let res = await fetch("https://api.ipify.org?format=json");
+        let data = await res.json();
+        return data.ip;
+    }catch{
+        return null;
     }
-});
+}
 
-/* REALTIME COUNT */
+/* FINGERPRINT */
+function getFingerprint(){
+    return navigator.userAgent + screen.width + screen.height;
+}
+
+/* MAIN LOGIC */
+(async ()=>{
+    const ip = await getIP();
+    const fingerprint = getFingerprint();
+
+    const id = btoa(ip + fingerprint).replace(/=/g,'');
+
+    const deviceRef = ref(db,"devices/"+id);
+
+    const snap = await get(deviceRef);
+
+    if(!snap.exists()){
+        await set(deviceRef,true);
+        await runTransaction(visitRef,(v)=>(v||0)+1);
+    }
+})();
+
+/* REALTIME */
 onValue(visitRef,(snap)=>{
-    const el=document.getElementById("visitCount");
-    if(el) el.innerText=snap.val()||0;
+    document.getElementById("visitCount").innerText = snap.val() || 0;
 });
 </script>
 
 <script>
-const overlay=document.getElementById("overlay");
-const audio=document.getElementById("bgMusic");
-const volume=document.getElementById("volume");
-const btn=document.getElementById("musicBtn");
-
-overlay.addEventListener("click",()=>{
-    overlay.style.display="none";
-    audio.play();
-    btn.textContent="⏸ Pause";
-});
-
-audio.volume=0.5;
-volume.value=0.5;
-
-volume.addEventListener("input",()=>{
-    audio.volume=volume.value;
-});
-
-btn.addEventListener("click",()=>{
-    if(audio.paused){
-        audio.play();
-        btn.textContent="⏸ Pause";
-    }else{
-        audio.pause();
-        btn.textContent="▶ Play";
-    }
-});
-
-/* BIO FIXED */
+/* BIO */
 const texts=[
-"ROMAN STORE TOP 1 KURDISH ONLINE GAMING STORE",
-"BEST DIGITAL STORE IN KURDISTAN"
+"ROMAN STORE BEST KURDISH ONLINE STORE",
+"SAFE , RELIABLE , RESPECTFUL"
 ];
 
 let i=0,t=0,del=false;
